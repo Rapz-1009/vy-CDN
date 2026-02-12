@@ -1,0 +1,546 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+
+import sys
+import json
+import re
+import os
+import urllib2
+import ssl
+from datetime import datetime
+
+DOMAINS = [
+    {
+        "name": "anti-ddos.me",
+        "zone_id": "3f33f6c4b5a3dd00ed16d1eb7677338e",
+        "api_token": "le350OqR25wWm5SpSJpcTbalOaTOKJA3FcRV4ohK"
+    },
+    {
+        "name": "centzzcloud.my.id",
+        "zone_id": "749f1d7d69e9329195761b570010c00f",
+        "api_token": "9Su8A1EDXnt9-yGDb7YSGlY_ogJAw2vR9IDtpFrQ"
+    },
+    {
+        "name": "hostsatoruu.biz.id",
+        "zone_id": "30ea1aac05ca26dda61540e172f52ff4",
+        "api_token": "eZp1wNcc0Mj-btUQQ1cDIek2NZ6u1YW1Bxc2SB3z"
+    },
+    {
+        "name": "panel-freefire.biz.id",
+        "zone_id": "2d7adf23d5ea185bead30c8ad14e1907",
+        "api_token": "le350OqR25wWm5SpSJpcTbalOaTOKJA3FcRV4ohK"
+    },
+    {
+        "name": "apcb.biz.id",
+        "zone_id": "01592fa9553ff4692ed443e5932ff285",
+        "api_token": "le350OqR25wWm5SpSJpcTbalOaTOKJA3FcRV4ohK"
+    },
+    {
+        "name": "tamaoffc.biz.id",
+        "zone_id": "177538af7fb12443a80892554d01206f",
+        "api_token": "ZaVSjxa96NQDV6lQgspAVsVXrvVzdOpqL1z6PG0Z"
+    },
+    {
+        "name": "skyzhee.biz.id",
+        "zone_id": "1256552db1d37f21ab2b80dd64b5b73c",
+        "api_token": "Bs3Hk4nK4svKoaDIx3kl5nWMVpX5JuK0UqSzHq27"
+    },
+    {
+        "name": "loveme.my.id",
+        "zone_id": "91d8ac3650cf245d3119a4f32dbfe03d",
+        "api_token": "Pnx3iE-AInXIyK2Ntxnsi149j6qdQ9YGMdca_j9b"
+    },
+    {
+        "name": "skyzheefreehost.web.id",
+        "zone_id": "1f62083089a28361115155e3a12c706a",
+        "api_token": "BLruK-mYmlVSyzHrp9cA7CZ_ZmPEvoKw-yztNDnW"
+    },
+    {
+        "name": "skyzheehost.web.id",
+        "zone_id": "bcd725cd0e4455230697e6055e9a5dcf",
+        "api_token": "n5xUe1SfPGs7MXj6K2CeqHiPW14T2i3OlWazlPVE"
+    },
+    {
+        "name": "skyzheewebhost.my.id",
+        "zone_id": "4baf8a18c916956d482cb8edf4d5ed5f",
+        "api_token": "DOq7imDH9vogdb0wAwzOixMtdcYKOeGva3ezBcyO"
+    },
+    {
+        "name": "jarotr.icu",
+        "zone_id": "32984e71a62ac8554f517f850d8df422",
+        "api_token": "TgKXV_bXsercqmau7gMulWuoElRnF5jbCmXCZ0uU"
+    },
+    {
+        "name": "ikky-panel.xyz",
+        "zone_id": "0aaff54fe302417e5c6509796c96ec89",
+        "api_token": "0KvHN3z0M0VqKJQ2kNBFbE8mKqgbavFW2PiMRJhh"
+    },
+    {
+        "name": "bangikky.my.id",
+        "zone_id": "39c8f56408b1ea319b8a4f8a4b5c05ad",
+        "api_token": "m_Kl5a8M3vLQEY0DtndpupNqlUJWttW-BwQaYXhj"
+    }
+]
+
+SELECTED_DOMAIN = None
+ZONE_ID = ""
+API_TOKEN = ""
+DOMAIN = ""
+DOMAIN_STATUS = "Nonaktif"
+
+class Colors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+    WHITE = '\033[97m'
+    MAGENTA = '\033[35m'
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def get_current_date():
+    now = datetime.now()
+    return now.strftime("%d %B %Y")
+
+def show_banner():
+    global DOMAIN_STATUS
+    current_date = get_current_date()
+    domain_display = DOMAIN if DOMAIN else "BELUM DIPILIH"
+    
+    status_color = Colors.GREEN if DOMAIN_STATUS == "AKTIF" else Colors.RED
+    
+    print(Colors.CYAN + "╭──────────────────────────────────────────────────" + Colors.END)
+    print(Colors.CYAN + "│ " + Colors.WHITE + "Domain" + Colors.CYAN + " : " + Colors.YELLOW + domain_display + Colors.END)
+    print(Colors.CYAN + "│ " + Colors.WHITE + "Status" + Colors.CYAN + " : " + status_color + DOMAIN_STATUS + Colors.END)
+    print(Colors.CYAN + "│ " + Colors.WHITE + "Github" + Colors.CYAN + " : " + Colors.YELLOW + "https://github.com/BangIkky" + Colors.END)
+    print(Colors.CYAN + "│ " + Colors.WHITE + "Date" + Colors.CYAN + "   : " + Colors.YELLOW + current_date + Colors.END)
+    print(Colors.CYAN + "├──────────────────────────────────────────────────" + Colors.END)
+    print(Colors.CYAN + "╰──────────────────────────────────────────────────" + Colors.END)
+    print(Colors.CYAN + " .................................................." + Colors.END)
+    print("")
+
+def show_domain_menu():
+    print(Colors.CYAN + "┏━『 *PILIH DOMAIN* 』" + Colors.END)
+    
+    for i, domain_config in enumerate(DOMAINS, 1):
+        num_str = "{:02d}".format(i)
+        print(Colors.CYAN + "┃" + Colors.GREEN + "[" + Colors.YELLOW + num_str + Colors.GREEN + "]" + Colors.WHITE + " " + domain_config["name"] + Colors.END)
+    
+    print(Colors.CYAN + "┃" + Colors.RED + "[00]" + Colors.WHITE + " Kembali ke Menu Utama" + Colors.END)
+    print(Colors.CYAN + "┗━━━━━━━◧" + Colors.END)
+    
+    
+    while True:
+        try:
+            choice = int(raw_input(Colors.BOLD + "> Pilih domain [0-%d]: " % len(DOMAINS) + Colors.END))
+            if choice == 0:
+                return None
+            if 1 <= choice <= len(DOMAINS):
+                return DOMAINS[choice - 1]
+            else:
+                print(Colors.RED + "Pilihan tidak valid!" + Colors.END)
+        except ValueError:
+            print(Colors.RED + "Masukkan angka yang valid!" + Colors.END)
+
+def show_menu():
+    print(Colors.CYAN + "┏━『 *MENU CATEGORIES* 』" + Colors.END)
+    print(Colors.CYAN + "┃" + Colors.GREEN + "[1] " + Colors.WHITE + "buat subdomain" + Colors.END)
+    print(Colors.CYAN + "┃" + Colors.GREEN + "[2] " + Colors.WHITE + "lihat subdomain" + Colors.END)
+    print(Colors.CYAN + "┃" + Colors.GREEN + "[3] " + Colors.WHITE + "hapus subdomain" + Colors.END)
+    print(Colors.CYAN + "┃" + Colors.GREEN + "[4] " + Colors.WHITE + "ganti domain" + Colors.END)
+    print(Colors.CYAN + "┃" + Colors.RED + "[0] " + Colors.WHITE + "exit" + Colors.END)
+    print(Colors.CYAN + "┗━━━━━━━◧" + Colors.END)
+    print(Colors.WHITE + "𝖕𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 𝖎𝖐𝖐𝖞 神" + Colors.END)
+    
+    
+    choice = raw_input(Colors.BOLD + "> Pilih menu [0-4]: " + Colors.END)
+    return choice
+    
+def press_enter():
+    print("")
+    raw_input(Colors.YELLOW + "> Tekan Enter untuk melanjutkan..." + Colors.END)
+
+def cf_request(method, endpoint, data=None):
+    url = "https://api.cloudflare.com/client/v4/zones/%s/%s" % (ZONE_ID, endpoint)
+    
+    headers = {
+        "Authorization": "Bearer %s" % API_TOKEN,
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0"
+    }
+    
+    try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        
+        if method == "GET":
+            req = urllib2.Request(url, headers=headers)
+        elif method == "POST":
+            req = urllib2.Request(url, json.dumps(data), headers=headers)
+            req.get_method = lambda: 'POST'
+        elif method == "DELETE":
+            req = urllib2.Request(url, headers=headers)
+            req.get_method = lambda: 'DELETE'
+        else:
+            return {"success": False, "errors": [{"message": "Method tidak didukung"}]}
+        
+        response = urllib2.urlopen(req, context=ctx)
+        response_data = response.read()
+        
+        return json.loads(response_data)
+        
+    except urllib2.HTTPError as e:
+        try:
+            error_data = json.loads(e.read())
+            return error_data
+        except:
+            return {"success": False, "errors": [{"message": "HTTP Error %s: %s" % (e.code, e.reason)}]}
+    except urllib2.URLError as e:
+        return {"success": False, "errors": [{"message": "URL Error: %s" % str(e.reason)}]}
+    except Exception as e:
+        return {"success": False, "errors": [{"message": "Error: %s" % str(e)}]}
+
+def check_api_connection():
+    global DOMAIN_STATUS
+    
+    print(Colors.CYAN + "┏━『 *CHECKING CONNECTION* 』" + Colors.END)
+    
+    
+    result = cf_request("GET", "")
+    
+    if result.get("success"):
+        print(Colors.CYAN + "┃" + Colors.WHITE + " Koneksi Cloudflare API: " + Colors.GREEN + "SUCCESS" + Colors.END)
+        DOMAIN_STATUS = "AKTIF"
+    else:
+        print(Colors.CYAN + "┃" + Colors.WHITE + " Koneksi Cloudflare API: " + Colors.RED + "FAILED" + Colors.END)
+        DOMAIN_STATUS = "Nonaktif"
+    
+    print(Colors.CYAN + "┗━━━━━━━◧" + Colors.END)
+    print("")
+    
+    return DOMAIN_STATUS == "AKTIF"
+
+def get_all_records():
+    result = cf_request("GET", "dns_records?type=A&per_page=100")
+    
+    if not result.get("success"):
+        print(Colors.RED + "Gagal mengambil data dari Cloudflare!" + Colors.END)
+        if result.get("errors"):
+            for error in result.get("errors", []):
+                print(Colors.RED + "  - " + str(error.get('message', 'Unknown error')) + Colors.END)
+        return []
+    
+    records = result.get("result", [])
+    
+    all_records = []
+    for record in records:
+        if record["type"] == "A":
+            all_records.append(record)
+    
+    return all_records
+
+def menu_create():
+    clear_screen()
+    show_banner()
+    print(Colors.CYAN + "┏━『 *BUAT SUBDOMAIN* 』" + Colors.END)
+    
+    
+    while True:
+        host = raw_input(Colors.YELLOW + "> " + Colors.BOLD + "Masukkan nama subdomain : " + Colors.END).strip().lower()
+        
+        if host == "@":
+            host = ""
+            target_name = DOMAIN
+            display_name = DOMAIN
+        else:
+            if not host:
+                print(Colors.RED + "Nama subdomain tidak boleh kosong! Gunakan @ untuk root." + Colors.END)
+                continue
+            
+            if not re.match(r'^[a-z0-9][a-z0-9.-]*[a-z0-9]$', host):
+                print(Colors.RED + "Format hostname tidak valid!" + Colors.END)
+                print(Colors.WHITE + "   Contoh: server1, api-test, cdn.mysite" + Colors.END)
+                continue
+            
+            target_name = "%s.%s" % (host, DOMAIN)
+            display_name = target_name
+        
+        records = get_all_records()
+        
+        exists = any(record["name"] == target_name for record in records)
+        if exists:
+            print(Colors.YELLOW + "Subdomain '%s' sudah ada!" % display_name + Colors.END)
+            print(Colors.WHITE + "   Akan menimpa record yang ada." + Colors.END)
+        
+        break
+    
+    while True:
+        ip = raw_input(Colors.YELLOW + "> " + Colors.BOLD + "Masukkan IP Address (IPv4): " + Colors.END).strip()
+        
+        ip_pattern = r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$'
+        if re.match(ip_pattern, ip):
+            break
+        else:
+            print(Colors.RED + "IP address tidak valid!" + Colors.END)
+            print(Colors.WHITE + "   Contoh: 1.1.1.1, 192.168.1.1" + Colors.END)
+    
+    
+    print(Colors.WHITE + "Domain: " + Colors.GREEN + display_name + Colors.END)
+    print(Colors.WHITE + "IP Address: " + Colors.GREEN + ip + Colors.END)
+    
+    
+    confirm = raw_input(Colors.YELLOW + "> " + Colors.BOLD + "Konfirmasi pembuatan? (y/N): " + Colors.END).strip().lower()
+    
+    if confirm not in ['y', 'yes']:
+        print(Colors.YELLOW + "Pembuatan dibatalkan." + Colors.END)
+        press_enter()
+        return
+    
+    print(Colors.WHITE + "Memproses pembuatan..." + Colors.END)
+    
+    data = {
+        "type": "A",
+        "name": target_name,
+        "content": ip,
+        "ttl": 3600,
+        "proxied": False
+    }
+    
+    result = cf_request("POST", "dns_records", data)
+    
+    if result.get("success"):
+        record = result["result"]
+        print(Colors.GREEN + "Record berhasil dibuat" + Colors.END)
+        print(Colors.WHITE + "  Domain: " + Colors.YELLOW + record['name'] + Colors.END)
+        print(Colors.WHITE + "  IP: " + Colors.YELLOW + record['content'] + Colors.END)
+        print(Colors.WHITE + "  TTL: " + Colors.YELLOW + "%s detik" % record['ttl'] + Colors.END)
+        print(Colors.YELLOW + "Akan aktif dalam 1-5 menit." + Colors.END)
+    else:
+        errors = result.get("errors", [])
+        if errors:
+            print(Colors.RED + "Gagal membuat record!" + Colors.END)
+            for error in errors:
+                print(Colors.RED + "  " + Colors.WHITE + str(error.get('message', 'Unknown error')) + Colors.END)
+    
+    press_enter()
+
+def menu_list():
+    clear_screen()
+    show_banner()
+    print(Colors.CYAN + "     『 *DAFTAR SUBDOMAIN* 』" + Colors.END)
+    
+    
+    records = get_all_records()
+    
+    if not records:
+        print(Colors.RED + " [0] Tidak ada subdomain" + Colors.END)
+    else:
+        for i, record in enumerate(records, 1):
+            domain_name = record["name"]
+            ip = record["content"]
+            
+            num_str = "{:02d}".format(i)
+            print(Colors.GREEN + " [" + Colors.YELLOW + num_str + Colors.GREEN + "]" + 
+                  Colors.WHITE + " %-35s" % domain_name + 
+                  Colors.WHITE + " > " + 
+                  Colors.YELLOW + "%s" % ip + Colors.END)
+    
+    print(Colors.RED + " [00]" + Colors.WHITE + " exit" + Colors.END)
+    print(Colors.CYAN + " ︻デ═一" + Colors.END)
+    print(Colors.WHITE + "𝖕𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 𝖎𝖐𝖐𝖞 神" + Colors.END)
+    
+    raw_input(Colors.YELLOW + "> Tekan Enter untuk kembali..." + Colors.END)
+
+def menu_delete():
+    clear_screen()
+    show_banner()
+    print(Colors.CYAN + "   『 *HAPUS SUBDOMAIN* 』" + Colors.END)
+    
+    
+    records = get_all_records()
+    
+    if not records:
+        print(Colors.RED + " [0] Tidak ada subdomain" + Colors.END)
+        print(Colors.CYAN + "┗━━━━━━━◧" + Colors.END)
+        print(Colors.WHITE + "𝖕𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 𝖎𝖐𝖐𝖞 神" + Colors.END)
+        press_enter()
+        return
+    
+    for i, record in enumerate(records, 1):
+        num_str = "{:02d}".format(i)
+        domain_name = record["name"]
+            
+        print(Colors.GREEN + " [" + Colors.YELLOW + num_str + Colors.GREEN + "]" + 
+              Colors.WHITE + " %-35s" % domain_name + 
+              Colors.WHITE + " > " + 
+              Colors.YELLOW + "%s" % record['content'] + Colors.END)
+    
+    print(Colors.RED + " [EX]" + Colors.WHITE + " Batal" + Colors.END)
+    print(Colors.CYAN + "┗━━━━━━━◧" + Colors.END)
+    print(Colors.WHITE + "𝖕𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 𝖎𝖐𝖐𝖞 神" + Colors.END)
+    
+    
+    while True:
+        try:
+            choice = raw_input(Colors.YELLOW + "> " + Colors.BOLD + "Masukkan nomor subdomain: " + Colors.END).strip()
+            
+            if choice == '0':
+                print(Colors.YELLOW + "Penghapusan dibatalkan." + Colors.END)
+                press_enter()
+                return
+            
+            if choice.startswith('0') and len(choice) > 1:
+                choice = choice[1:]
+            
+            num = int(choice)
+            
+            if num < 1 or num > len(records):
+                print(Colors.RED + "Nomor tidak valid! Pilih 01-%s" % "{:02d}".format(len(records)) + Colors.END)
+                continue
+            
+            selected = records[num - 1]
+            
+            if selected['name'] == DOMAIN:
+                print(Colors.RED + "PERINGATAN: Ini adalah domain utama!" + Colors.END)
+                print(Colors.YELLOW + "Menghapus domain utama dapat menyebabkan website tidak dapat diakses." + Colors.END)
+                confirm_main = raw_input(Colors.YELLOW + "> " + Colors.BOLD + "Yakin ingin menghapus domain utama? (ketik 'YA'): " + Colors.END).strip().upper()
+                if confirm_main != 'YA':
+                    print(Colors.YELLOW + "Penghapusan dibatalkan." + Colors.END)
+                    press_enter()
+                    return
+            
+            break
+            
+        except ValueError:
+            print(Colors.RED + "Masukkan angka yang valid!" + Colors.END)
+            continue
+    
+    print(Colors.RED + "PERINGATAN! Anda akan menghapus:" + Colors.END)
+    print(Colors.WHITE + "  Domain: " + Colors.RED + selected['name'] + Colors.END)
+    print(Colors.WHITE + "  IP Address: " + Colors.RED + selected['content'] + Colors.END)
+    print(Colors.WHITE + "  Record ID: " + Colors.RED + selected['id'][:20] + "..." + Colors.END)
+    
+    
+    confirm = raw_input(Colors.YELLOW + "> " + Colors.BOLD + "Yakin ingin menghapus? (ketik 'YA'): " + Colors.END).strip().upper()
+    
+    if confirm != 'YA':
+        print(Colors.YELLOW + "Penghapusan dibatalkan." + Colors.END)
+        press_enter()
+        return
+    
+    print(Colors.WHITE + "Menghapus subdomain..." + Colors.END)
+    
+    result = cf_request("DELETE", "dns_records/%s" % selected['id'])
+    
+    if result.get("success"):
+        print(Colors.GREEN + "Subdomain berhasil dihapus!" + Colors.END)
+        print(Colors.YELLOW + "Perubahan berlaku dalam 1-5 menit." + Colors.END)
+    else:
+        errors = result.get("errors", [])
+        if errors:
+            print(Colors.RED + "Gagal menghapus subdomain!" + Colors.END)
+            for error in errors:
+                print(Colors.RED + "  " + Colors.WHITE + str(error.get('message', 'Unknown error')) + Colors.END)
+    
+    press_enter()
+
+def menu_change_domain():
+    global ZONE_ID, API_TOKEN, DOMAIN, SELECTED_DOMAIN, DOMAIN_STATUS
+    
+    clear_screen()
+    show_banner()
+    
+    new_domain = show_domain_menu()
+    
+    if new_domain is None:
+        return False
+    
+    SELECTED_DOMAIN = new_domain
+    ZONE_ID = new_domain["zone_id"]
+    API_TOKEN = new_domain["api_token"]
+    DOMAIN = new_domain["name"]
+    
+    clear_screen()
+    show_banner()
+    print(Colors.GREEN + "Domain berhasil diganti ke: " + Colors.YELLOW + DOMAIN + Colors.END)
+    print("")
+    
+    check_api_connection()
+    
+    return True
+
+def menu_exit():
+    clear_screen()
+    show_banner()
+    print(Colors.CYAN + "   『 *EXIT PROGRAM* 』" + Colors.END)
+    
+    print(Colors.GREEN + "Terima kasih telah menggunakan Subdomain Manager!" + Colors.END)
+    print(Colors.WHITE + "𝖕𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 𝖎𝖐𝖐𝖞 神" + Colors.END)
+    print(Colors.YELLOW + "Program akan keluar..." + Colors.END)
+    
+    sys.exit(0)
+
+def main():
+    global ZONE_ID, API_TOKEN, DOMAIN, SELECTED_DOMAIN, DOMAIN_STATUS
+    
+    clear_screen()
+    show_banner()
+    
+    
+    selected = show_domain_menu()
+    if selected is None:
+        menu_exit()
+        return
+    
+    SELECTED_DOMAIN = selected
+    ZONE_ID = selected["zone_id"]
+    API_TOKEN = selected["api_token"]
+    DOMAIN = selected["name"]
+    
+    clear_screen()
+    show_banner()
+    
+    check_api_connection()
+    
+    press_enter()
+    
+    while True:
+        try:
+            clear_screen()
+            show_banner()
+            choice = show_menu()
+            
+            if choice == '1':
+                menu_create()
+            elif choice == '2':
+                menu_list()
+            elif choice == '3':
+                menu_delete()
+            elif choice == '4':
+                if menu_change_domain():
+                    continue
+            elif choice == '0':
+                menu_exit()
+            else:
+                
+                print(Colors.RED + "Pilihan tidak valid! Silakan pilih 0-4." + Colors.END)
+                press_enter()
+                
+        except KeyboardInterrupt:
+            
+            print(Colors.YELLOW + "Program dihentikan oleh pengguna." + Colors.END)
+            sys.exit(0)
+        except Exception as e:
+            
+            print(Colors.RED + "Terjadi kesalahan: %s" % str(e) + Colors.END)
+            press_enter()
+
+if __name__ == "__main__":
+    main()
