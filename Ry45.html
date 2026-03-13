@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MikuBot — Cobalt & Navy · Penn Red</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0b0b0f;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+
+    /* 
+      PALET WARNA BARU dari file 407032.jpg 
+      Penn red      #9C0005 
+      Red           #FF0000   (tetap aksen kecil)
+      White         #FFFFFF 
+      Cobalt blue   #0D4ABC 
+      Navy blue     #010169 
+    */
+    :root {
+      --penn-red: #9C0005;
+      --red-bright: #FF0000;
+      --cobalt: #0D4ABC;
+      --navy: #010169;
+      --white: #FFFFFF;
+
+      --primary-red: var(--penn-red);         /* lebih gelap, elegan */
+      --primary-blue: var(--cobalt);           /* cobalt khas */
+      --red-hover: #7a0003;
+      --blue-hover: #0a3590;
+      --dark-bg: #0b0b0f;
+      --card-bg: #13131a;
+      --border-gray: #23233a;
+    }
+
+    /* fallback gradien tetap pakai kombinasi baru */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* qris section dengan border navy/cobalt */
+    .qris-section {
+      background: linear-gradient(145deg, #0e0e16, #12121c);
+      border-radius: 24px;
+      padding: 40px;
+      margin: 30px 0;
+      border: 1px solid var(--border-gray);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .qris-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--penn-red), var(--cobalt), var(--navy));
+    }
+
+    .qris-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .qris-subtitle {
+      color: #b0b0c0;
+      margin-bottom: 30px;
+    }
+
+    .qris-card {
+      background: #0b0b0f;
+      border-radius: 20px;
+      padding: 30px;
+      display: inline-block;
+      border: 1px solid var(--border-gray);
+    }
+
+    .dana-info {
+      background: linear-gradient(145deg, rgba(156, 0, 5, 0.15), rgba(13, 74, 188, 0.15));
+      border: 1px solid var(--cobalt);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .dana-number {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+
+    .steps {
+      text-align: left;
+      max-width: 400px;
+      margin: 30px auto 0;
+      padding: 20px;
+      background: #12121a;
+      border-radius: 16px;
+      border-left: 3px solid var(--cobalt);
+      border-right: 3px solid var(--penn-red);
+    }
+
+    .steps li {
+      list-style: none;
+      margin: 12px 0;
+      color: #c0c0d0;
+    }
+
+    .steps li::before {
+      content: "•";
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      display: inline-block;
+      width: 20px;
+    }
+
+    /* Navigasi */
+    .nav-menu {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 2px solid;
+      border-image: linear-gradient(90deg, var(--penn-red), var(--cobalt), var(--navy)) 1;
+      margin-bottom: 30px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-image {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt)) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      transition: all 0.3s ease;
+    }
+
+    .logo-image:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(13, 74, 188, 0.7);
+    }
+
+    .logo-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 24px;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links a {
+      color: #ffffff;
+      text-decoration: none;
+      margin-left: 30px;
+      transition: all 0.3s;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--penn-red), var(--cobalt));
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 60px 0;
+    }
+
+    .hero-content h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .hero-content h1 span {
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: #b0b0c0;
+      margin-bottom: 20px;
+    }
+
+    .badge-online {
+      background: linear-gradient(135deg, rgba(156, 0, 5, 0.2), rgba(13, 74, 188, 0.2));
+      color: var(--cobalt);
+      padding: 8px 16px;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(13, 74, 188, 0.4);
+    }
+
+    .stats {
+      display: flex;
+      gap: 40px;
+      margin: 40px 0;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid var(--border-gray);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--penn-red), var(--cobalt));
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+    }
+
+    .feature-card:hover::before {
+      transform: translateX(0);
+    }
+
+    .feature-card:hover {
+      border-color: transparent;
+      box-shadow: 0 5px 20px rgba(13, 74, 188, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin: 40px 0;
+    }
+
+    .pricing-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 30px 25px;
+      border: 1px solid var(--border-gray);
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .pricing-card:hover {
+      border-color: var(--cobalt);
+      transform: scale(1.02);
+      box-shadow: 0 10px 30px rgba(13, 74, 188, 0.3);
+    }
+
+    .pricing-card.popular {
+      border: 2px solid transparent;
+      background: linear-gradient(#13131a, #13131a) padding-box,
+                  linear-gradient(135deg, var(--penn-red), var(--cobalt), var(--navy)) border-box;
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      color: white;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .price {
+      font-size: 36px;
+      font-weight: 700;
+      margin: 20px 0;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .price small {
+      font-size: 16px;
+      color: #b0b0c0;
+      background: none;
+      -webkit-text-fill-color: #b0b0c0;
+    }
+
+    .old-price {
+      text-decoration: line-through;
+      color: #80809a;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .feature-list li {
+      margin: 10px 0;
+      color: #c0c0d0;
+    }
+
+    .feature-list li::before {
+      content: "✓";
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-right: 10px;
+    }
+
+    .closed-badge {
+      background: #23233a;
+      color: #a0a0ba;
+      padding: 4px 12px;
+      border-radius: 40px;
+      display: inline-block;
+      font-size: 12px;
+    }
+
+    /* buttons */
+    .action-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 16px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(13, 74, 188, 0.5);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid transparent;
+      background: linear-gradient(#13131a, #13131a) padding-box,
+                  linear-gradient(135deg, var(--penn-red), var(--cobalt)) border-box;
+    }
+
+    .btn-outline:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(156, 0, 5, 0.3);
+    }
+
+    .owner-info {
+      text-align: center;
+      margin: 20px 0 40px;
+      color: #b0b0c0;
+    }
+
+    .owner-info a {
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .owner-info a:hover {
+      text-decoration: underline;
+    }
+
+    /* testimonials */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+
+    .testimonial-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid var(--border-gray);
+      transition: all 0.3s;
+    }
+
+    .testimonial-card:hover {
+      border-color: var(--penn-red);
+    }
+
+    .stars {
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .testimonial-author {
+      margin-top: 20px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .testimonial-role {
+      color: #b0b0c0;
+      font-size: 14px;
+    }
+
+    /* gallery */
+    .gallery-section {
+      margin: 60px 0;
+    }
+    
+    .gallery-title {
+      font-size: 32px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+    }
+    
+    .gallery-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border-gray);
+      transition: all 0.3s;
+    }
+    
+    .gallery-card:hover {
+      transform: translateY(-10px);
+      border-color: transparent;
+      box-shadow: 0 10px 30px rgba(13, 74, 188, 0.4);
+    }
+    
+    .gallery-image {
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(145deg, #1f1f2e, #13131a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-gray);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .gallery-image svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .gallery-caption {
+      padding: 20px;
+    }
+    
+    .gallery-caption h4 {
+      margin-bottom: 10px;
+      font-size: 18px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .gallery-caption p {
+      color: #b0b0c0;
+      font-size: 14px;
+    }
+    
+    .badge-image {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      color: white;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* faq */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+
+    .faq-item {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid var(--border-gray);
+      transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+      border-color: var(--cobalt);
+    }
+
+    .faq-item h4 {
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, var(--penn-red), var(--cobalt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cta-section {
+      background: linear-gradient(145deg, #0e0e16, #12121c);
+      border-radius: 24px;
+      padding: 60px;
+      text-align: center;
+      margin: 60px 0;
+      border: 1px solid var(--border-gray);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--penn-red), var(--cobalt), var(--navy));
+    }
+
+    .footer {
+      border-top: 2px solid;
+      border-image: linear-gradient(90deg, var(--penn-red), var(--cobalt)) 1;
+      padding: 40px 0;
+      text-align: center;
+      color: #b0b0c0;
+    }
+
+    .divider {
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--penn-red), var(--cobalt));
+      margin: 20px auto 30px;
+      border-radius: 3px;
+    }
+
+    .payment-methods {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      justify-content: center;
+    }
+    
+    .payment-item {
+      background: linear-gradient(145deg, rgba(156, 0, 5, 0.15), rgba(13, 74, 188, 0.15));
+      border: 1px solid var(--cobalt);
+      border-radius: 40px;
+      padding: 12px 30px;
+      display: inline-block;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .hero { flex-direction: column; text-align: center; }
+      .nav-menu { flex-direction: column; gap: 15px; }
+      .nav-links a { margin: 0 15px; }
+      .stats { justify-content: center; }
+      .action-buttons { flex-direction: column; align-items: center; }
+      .btn { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Navigation -->
+    <nav class="nav-menu">
+      <div class="logo-container">
+        <div class="logo-image">
+          <img 
+            src="https://i.pinimg.com/736x/8b/99/9c/8b999cbaa9c7d1a1d8c5c1f9e8c8b9c8.jpg" 
+            alt="Nakano Miku"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDUiIGhlaWdodD0iNDUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQ1IiBoZWlnaHQ9IjQ1IiBmaWxsPSIjMmEwZjBmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJJbnRlciwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1JS1U8L3RleHQ+PC9zdmc+';"
+          >
+        </div>
+        <span class="logo-text">MIKUBOT</span>
+      </div>
+      <div class="nav-links">
+        <a href="#">Beranda</a>
+        <a href="#">Fitur</a>
+        <a href="#">Harga</a>
+        <a href="#">Testimoni</a>
+        <a href="#">FAQ</a>
+      </div>
+    </nav>
+
+    <!-- QRIS DANA dengan warna baru -->
+    <div class="qris-section">
+      <h2 class="qris-title">Pembayaran DANA</h2>
+      <p class="qris-subtitle">Transfer langsung ke nomor DANA di bawah</p>
+      
+      <div class="qris-card">
+        <div class="dana-info">
+          <p style="color: #b0b0c0; margin-bottom: 10px;">Nomor DANA Aktif:</p>
+          <div class="dana-number">082320532450</div>
+          <p style="color: #b0b0c0; margin-top: 15px; font-size: 14px;">✓ Terverifikasi</p>
+        </div>
+        
+        <div class="steps">
+          <h4 style="margin-bottom: 15px; background: linear-gradient(135deg, var(--penn-red), var(--cobalt)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Cara bayar:</h4>
+          <li>Buka aplikasi DANA</li>
+          <li>Pilih menu Transfer</li>
+          <li>Masukkan nomor 082320532450</li>
+          <li>Konfirmasi & kirim bukti ke admin</li>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-content">
+        <span class="badge-online">● 127 online</span>
+        <h1>WhatsApp <span>Automation</span> Bot</h1>
+        <p class="hero-sub">Otomatis untuk Grup & Pribadi</p>
+        <p style="color: #b0b0c0; max-width: 500px;">
+          Bot WhatsApp, manajemen grup, downloader, game, dan AI chat. Stabil 24/7, setup mudah, harga terjangkau.
+        </p>
+        
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value">5K+</div>
+            <div style="color: #b0b0c0;">Pengguna Verified</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">24h</div>
+            <div style="color: #b0b0c0;">Online</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">99%</div>
+            <div style="color: #b0b0c0;">Uptime</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="action-buttons">
+      <a href="https://chat.whatsapp.com/EHhFStPlmWrGuQm6mEZf6X" target="_blank" class="btn btn-primary">📱 Gabung Grup Miku</a>
+      <a href="https://wa.me/6282320532450" target="_blank" class="btn btn-outline">👤 Owner Bot Miku</a>
+    </div>
+
+    <div class="owner-info">
+      <p>Owner: <a href="https://wa.me/6282320532450" target="_blank">+62 823-2053-2450</a> • Fast Response</p>
+    </div>
+
+    <!-- Features -->
+    <h2 style="font-size: 32px; margin: 60px 0 20px; text-align: center;">Fitur <span class="gradient-text">Populer</span></h2>
+    <div class="divider"></div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">📥</div><h3>All-in-One Downloader</h3><p style="color: #b0b0c0;">TikTok, IG, FB tanpa watermark</p></div>
+      <div class="feature-card"><div class="feature-icon">🤖</div><h3>AI Chat</h3><p style="color: #b0b0c0;">Tanya apa saja, langsung dijawab</p></div>
+      <div class="feature-card"><div class="feature-icon">🎨</div><h3>Brat & BratVid</h3><p style="color: #b0b0c0;">Teks jadi stiker/video estetik</p></div>
+      <div class="feature-card"><div class="feature-icon">⚙️</div><h3>Tools Grup</h3><p style="color: #b0b0c0;">Welcome, anti-link, admin tools</p></div>
+      <div class="feature-card"><div class="feature-icon">🎮</div><h3>RPG & Game</h3><p style="color: #b0b0c0;">Ekonomi, quest, dan game seru</p></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><h3>Auto-Reply</h3><p style="color: #b0b0c0;">Respon cepat tanpa delay</p></div>
+    </div>
+
+    <!-- GALLERY dengan warna baru -->
+    <div class="gallery-section">
+      <h2 class="gallery-title"><span class="gradient-text">Galeri</span> Promo</h2>
+      <div class="divider"></div>
+      <div class="gallery-grid">
+        <div class="gallery-card">
+          <div class="gallery-image">
+            <svg viewBox="0 0 400 200" style="width:100%; height:100%; background: linear-gradient(145deg, #1a1a28, #12121a);">
+              <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9C0005" stop-opacity="0.3"/><stop offset="50%" stop-color="#0D4ABC" stop-opacity="0.3"/><stop offset="100%" stop-color="#010169" stop-opacity="0.3"/></linearGradient></defs>
+              <rect width="400" height="200" fill="url(#g1)"/>
+              <text x="20" y="40" fill="#9C0005" font-family="Inter" font-size="16" font-weight="bold">📊 Proyek: 1.000.000</text>
+              <text x="20" y="70" fill="#FFFFFF" font-size="14">Total 1.000.000 (100%)</text>
+              <text x="20" y="100" fill="#b0b0c0" font-size="12">95% | 90% | 85% | 80% | 75% | 70% | 65%</text>
+              <text x="20" y="130" fill="#b0b0c0" font-size="12">60% | 55% | 50% | 45% | 40% | 35% | 30%</text>
+              <text x="20" y="160" fill="#b0b0c0" font-size="12">25% | 20% | 15% | 10% | 5% | 2% | 1%</text>
+              <text x="20" y="190" fill="#0D4ABC" font-size="14">📈 Rincian persentase proyek</text>
+            </svg>
+            <span class="badge-image">406994.jpg</span>
+          </div>
+          <div class="gallery-caption"><h4>Struktur Harga Proyek</h4><p>Visualisasi tabel dari file 406994.jpg - rincian persentase 1.000.000</p></div>
+        </div>
+        <div class="gallery-card">
+          <div class="gallery-image">
+            <svg viewBox="0 0 400 200" style="width:100%; height:100%; background: linear-gradient(145deg, #1a1a28, #12121a);">
+              <defs><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#9C0005" stop-opacity="0.2"/><stop offset="100%" stop-color="#0D4ABC" stop-opacity="0.2"/></linearGradient></defs>
+              <rect width="400" height="200" fill="url(#g2)"/>
+              <circle cx="200" cy="80" r="40" fill="none" stroke="#9C0005" stroke-width="3" stroke-dasharray="5,5"/>
+              <circle cx="200" cy="80" r="25" fill="none" stroke="#0D4ABC" stroke-width="3"/>
+              <text x="200" y="85" text-anchor="middle" fill="#FFFFFF" font-size="20" font-weight="bold">50%</text>
+              <text x="200" y="140" text-anchor="middle" fill="#b0b0c0" font-size="14">Diskon Spesial</text>
+            </svg>
+            <span class="badge-image">PROMO</span>
+          </div>
+          <div class="gallery-caption"><h4>Promo Akhir Bulan</h4><p>Dapatkan diskon 50% untuk paket Premium dengan kode: MIKU50</p></div>
+        </div>
+        <div class="gallery-card">
+          <div class="gallery-image">
+            <svg viewBox="0 0 400 200" style="width:100%; height:100%; background: linear-gradient(145deg, #1a1a28, #12121a);">
+              <defs><linearGradient id="g3" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#9C0005" stop-opacity="0.2"/><stop offset="100%" stop-color="#0D4ABC" stop-opacity="0.2"/></linearGradient></defs>
+              <rect width="400" height="200" fill="url(#g3)"/>
+              <path d="M50 150 L150 50 L250 100 L350 150" stroke="#9C0005" stroke-width="3" fill="none"/>
+              <path d="M50 150 L150 80 L250 120 L350 150" stroke="#0D4ABC" stroke-width="3" fill="none"/>
+              <text x="200" y="180" text-anchor="middle" fill="#FFFFFF" font-size="14">Grafik Peningkatan Pengguna</text>
+            </svg>
+            <span class="badge-image">STATS</span>
+          </div>
+          <div class="gallery-caption"><h4>Peningkatan 200%</h4><p>Pengguna aktif meningkat 200% dalam 3 bulan</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kenapa Miku -->
+    <div style="margin: 60px 0;">
+      <h2 style="font-size: 32px; margin-bottom: 40px; text-align: center;">Kenapa <span class="gradient-text">Miku?</span></h2>
+      <div class="divider"></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <div><h3 style="background: linear-gradient(135deg, var(--penn-red), var(--cobalt)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">⚡ Respon Instan</h3><p style="color: #b0b0c0;">Menjawab pesan dalam hitungan milidetik. Tidak ada delay.</p></div>
+        <div><h3 style="background: linear-gradient(135deg, var(--penn-red), var(--cobalt)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">👥 Manajemen Grup</h3><p style="color: #b0b0c0;">Welcome, anti-link, kick spam, tools admin lengkap.</p></div>
+        <div><h3 style="background: linear-gradient(135deg, var(--penn-red), var(--cobalt)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🖥️ Server Stabil</h3><p style="color: #b0b0c0;">Uptime 99%+. Bot down >24 jam, masa aktif diperpanjang.</p></div>
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <h2 style="font-size: 32px; margin: 60px 0 20px; text-align: center;">Paket & <span class="gradient-text">Harga</span></h2>
+    <div class="divider"></div>
+    <p style="color: #b0b0c0; margin-bottom: 40px; text-align: center;">Pilih paket yang cocok.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card"><h3>Sewa Grup</h3><p style="color: #b0b0c0;">Bot Grup - Aktif untuk semua anggota</p><div class="price">Rp 5.000 <small>/15 Hari</small></div><div class="feature-list"><li>Semua anggota bisa pakai</li><li>Fitur manajemen grup lengkap</li><li>Tanpa limit harian</li><li>Tanpa iklan</li></div><span class="popular-badge" style="left: auto; right: 20px;">⭐ Populer</span></div>
+      <div class="pricing-card popular"><span class="popular-badge">Paling Laris</span><h3>Premium</h3><div class="price">Rp 10.000 <small>/30 Hari</small></div><div class="feature-list"><li>Limit unlimited</li><li>Semua fitur terbuka</li><li>Garansi 30 hari permanen</li></div></div>
+      <div class="pricing-card"><h3>Paket Grup</h3><div class="price">Rp 25.000 <small><span class="old-price">Rp 30.000</span></small></div><p style="color: #b0b0c0;">60 Hari</p><div class="feature-list"><li>Semua fitur grup</li><li>Prioritas support</li></div></div>
+      <div class="pricing-card"><h3>Permanen ⚠️</h3><div class="price">Rp 50.000</div><p style="color: #b0b0c0;">Eksklusif untuk grup</p><div class="feature-list"><li>Semua fitur premium</li><li>Grup permanen</li></div><span class="closed-badge">🔒 CLOSED</span></div>
+    </div>
+
+    <!-- Payment Methods -->
+    <h2 style="font-size: 32px; margin: 60px 0 20px; text-align: center;">Metode <span class="gradient-text">Pembayaran</span></h2>
+    <div class="divider"></div>
+    <div style="text-align: center;">
+      <div class="payment-methods"><span class="payment-item">DANA • 082320532450</span></div>
+      <p style="color: #b0b0c0;">Pembayaran hanya melalui DANA ke nomor di atas</p>
+    </div>
+
+    <!-- Testimonials -->
+    <h2 style="font-size: 32px; margin: 60px 0 20px; text-align: center;">Kata mereka yang <span class="gradient-text">udah pakai</span></h2>
+    <div class="divider"></div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card"><div class="stars">★★★★★</div><p>"sangat senang sekali"</p><div class="testimonial-author">(bintang 5)</div><div class="testimonial-role">Pelanggan Setia</div></div>
+      <div class="testimonial-card"><div class="stars">★★★★★</div><p>"senang"</p><div class="testimonial-author">(liaa)</div><div class="testimonial-role">Pengguna Premium</div></div>
+      <div class="testimonial-card"><div class="stars">★★★★★</div><p>"Mantap banget, recommended!"</p><div class="testimonial-author">(anak orang)</div><div class="testimonial-role">Admin Grup</div></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <h2 style="font-size: 36px;">Siap coba <span class="gradient-text">Miku?</span></h2>
+      <p style="color: #b0b0c0; max-width: 600px; margin: 20px auto;">Gabung ke grup resmi Miku untuk update fitur, bantuan, dan info terbaru seputar bot.</p>
+      <p style="color: #b0b0c0; font-size: 14px; margin-top: 20px;">📌 Info Aktivasi: Proses aktivasi bot dilakukan setelah verifikasi pembayaran via DANA.</p>
+      <a href="https://chat.whatsapp.com/EHhFStPlmWrGuQm6mEZf6X" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">GABUNG GRUP MIKU SEKARANG</a>
+    </div>
+
+    <!-- FAQ -->
+    <h2 style="font-size: 32px; margin: 60px 0 20px; text-align: center;">Pertanyaan yang <span class="gradient-text">sering ditanya</span></h2>
+    <div class="divider"></div>
+    <div class="faq-grid">
+      <div class="faq-item"><h4>Apa itu Premium?</h4><p style="color: #b0b0c0;">Premium adalah membership bot untuk pribadi dan grup pribadi. Akses ke semua fitur dengan limit unlimited.</p></div>
+      <div class="faq-item"><h4>Bagaimana cara aktivasi?</h4><p style="color: #b0b0c0;">Pilih paket, hubungi owner via WhatsApp, lakukan pembayaran ke DANA 082320532450, kirim bukti, bot diaktifkan dalam 1-2 jam.</p></div>
+      <div class="faq-item"><h4>Garansi?</h4><p style="color: #b0b0c0;">Garansi 30 hari untuk paket permanen. Bot down lebih 24 jam = ekstensi masa aktif gratis.</p></div>
+      <div class="faq-item"><h4>Apakah bisa trial?</h4><p style="color: #b0b0c0;">Bisa! Silakan gabung ke grup utama untuk mencoba fitur dasar bot secara gratis.</p></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>© 2026 Miku Bot · All rights reserved</p>
+      <p style="margin-top: 10px; font-size: 14px;">Owner: <a href="https://wa.me/6282320532450" target="_blank" style="color: var(--cobalt); text-decoration: none;">082320532450</a></p>
+    </footer>
+  </div>
+</body>
+</html>
